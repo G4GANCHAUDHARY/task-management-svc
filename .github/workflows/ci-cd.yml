@@ -67,7 +67,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
-    # FIXED: Convert repository name to lowercase
     - name: Set image tag
       id: set-image-tag
       run: |
@@ -76,7 +75,6 @@ jobs:
         echo "IMAGE_TAG=${{ env.REGISTRY }}/${REPO_LOWER}:${SHORT_SHA}" >> $GITHUB_OUTPUT
         echo "LATEST_TAG=${{ env.REGISTRY }}/${REPO_LOWER}:latest" >> $GITHUB_OUTPUT
     
-    # FIXED: Simplified cache configuration
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -85,7 +83,6 @@ jobs:
         tags: |
           ${{ steps.set-image-tag.outputs.IMAGE_TAG }}
           ${{ steps.set-image-tag.outputs.LATEST_TAG }}
-        # REMOVED problematic cache lines
 
   # ============================================
   # JOB 3: DEPLOY (DEMO)
@@ -100,26 +97,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    # FIXED: Simple demo without kubectl
     - name: Demo Deployment
       run: |
-        echo "🎯 =============================================="
-        echo "🎯   KUBERNETES DEPLOYMENT DEMO"
-        echo "🎯 =============================================="
+        echo "=============================================="
+        echo "   KUBERNETES DEPLOYMENT DEMO"
+        echo "=============================================="
         echo ""
-        echo "📦 Image that would be deployed:"
+        echo " Image that would be deployed:"
         echo "   ${{ needs.build-and-push.outputs.image_tag }}"
         echo ""
-        echo "📋 Deployment Configuration:"
+        echo " Deployment Configuration:"
         echo "   ├─ Replicas: 3"
         echo "   ├─ Namespace: task-management"
         echo "   ├─ Container Port: 8000"
         echo "   └─ Service Port: 80"
         echo ""
-        echo "⚙️ Deployment Steps:"
-        echo "   1️⃣ kubectl create namespace task-management"
-        echo "   2️⃣ kubectl apply -f deployment.yaml"
-        echo "   3️⃣ kubectl apply -f service.yaml"
-        echo "   4️⃣ kubectl rollout status deployment/task-api"
+        echo " Deployment Steps:"
+        echo "   kubectl create namespace task-management"
+        echo "   kubectl apply -f deployment.yaml"
+        echo "   kubectl apply -f service.yaml"
+        echo "   kubectl rollout status deployment/task-api"
         echo ""
-        echo "✅ DEMO SUCCESSFUL - Pipeline Complete!"
+        echo "DEMO SUCCESSFUL - Pipeline Complete!"
