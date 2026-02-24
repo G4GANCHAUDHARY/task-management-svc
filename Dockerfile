@@ -37,8 +37,8 @@ CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers
 
 # kubectl create namespace task-management
 
-# Apply manifests → kubectl apply -f deployment.yaml -f service.yaml
+# kubectl apply -f deployment.yaml -f service.yaml
 
-# Port forward → kubectl port-forward -n task-management service/task-api-service 8080:80
+# kubectl port-forward -n task-management service/task-api-service 8080:80
 
-# Test → curl http://localhost:8080/health
+# curl http://localhost:8080/health
