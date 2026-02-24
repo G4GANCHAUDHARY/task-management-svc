@@ -1,0 +1,55 @@
+# Version control
+.git/
+.gitignore
+.svn/
+
+# Python specific
+venv/
+env/
+ENV/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment and secrets
+.env
+*.env
+secrets/
+config/secrets.yaml
+*.pem
+*.key
+
+# Logs and databases
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Documentation
+README.md
+CHANGELOG.md
+docs/
+
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
