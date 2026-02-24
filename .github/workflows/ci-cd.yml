@@ -84,8 +84,8 @@ jobs:
         tags: |
           ${{ steps.set-image-tag.outputs.IMAGE_TAG }}
           ${{ steps.set-image-tag.outputs.LATEST_TAG }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+        cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
   # ============================================
   # JOB 3: DEPLOY
