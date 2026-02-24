@@ -76,6 +76,12 @@ jobs:
         echo "IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${SHORT_SHA}" >> $GITHUB_OUTPUT
         echo "LATEST_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_OUTPUT
     
+    # ⭐ NEW STEP ADDED - THIS FIXES THE CACHE ERROR
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        driver: docker-container  # Enables cache export
+    
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
