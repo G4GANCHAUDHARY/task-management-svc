@@ -3,27 +3,16 @@ DEPLOYMENT GUIDE - TASK MANAGEMENT API
 Actual Implementation & Solution Approach
 
 
-TABLE OF CONTENTS
------------------
-1. Overview
-2. Dockerization (Step 1)
-3. Kubernetes Deployment (Step 2)
-4. CI/CD Pipeline (Step 3)
-5. Challenges & Solutions
-6. How to Test Our Solution
-
-
 
 1. OVERVIEW
-===============================================================================
 
 This document describes how we solved the DevOps Pipeline Challenge for the
 Task Management API. Our approach focused on:
 
-✓ Containerization with Docker best practices
-✓ Kubernetes deployment with kind (local cluster)
-✓ CI/CD pipeline with GitHub Actions (demo mode)
-✓ Comprehensive documentation
+Containerization with Docker best practices
+Kubernetes deployment with kind (local cluster)
+CI/CD pipeline with GitHub Actions (demo mode)
+Comprehensive documentation
 
 Tools Used:
 - Docker Desktop (with Kubernetes enabled)
@@ -33,11 +22,9 @@ Tools Used:
 
 
 
-2. DOCKERIZATION (STEP 1)
-===============================================================================
+2. DOCKERIZATION
 
 2.1 Dockerfile Design Decisions
--------------------------------------------------------------------------------
 We created a multi-stage Dockerfile with these key decisions:
 
 
@@ -46,7 +33,6 @@ Multi-stage : Builder + Production, Smaller final image
 Health Check : HEALTHCHECK instruction For Kubernetes probes 
 
 2.2 Final Dockerfile
--------------------------------------------------------------------------------
 FROM python:3.11-slim AS builder
 WORKDIR /app
 COPY requirements.txt .
@@ -64,23 +50,20 @@ HEALTHCHECK CMD python -c "import urllib.request; urllib.request.urlopen('http:/
 CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
 
 2.3 Building & Testing Locally
--------------------------------------------------------------------------------
-# Build with production tag
+- Build with production tag
 docker build -t task-api:prod .
 
-# Run container
+- Run container
 docker run -d -p 8000:8000 --name task-api-test task-api:prod
 
-# Verify
+- Verify
 curl http://localhost:8000/health
 curl http://localhost:8000/docs
 
 
-3. KUBERNETES DEPLOYMENT (STEP 2)
-===============================================================================
+3. KUBERNETES DEPLOYMENT
 
 3.1 Local Cluster Setup with kind
--------------------------------------------------------------------------------
 We used Docker Desktop's built-in Kubernetes with kind provisioner:
 
 1. Enabled Kubernetes in Docker Desktop:
@@ -92,7 +75,6 @@ We used Docker Desktop's built-in Kubernetes with kind provisioner:
    kubectl get nodes
 
 3.2 Kubernetes Manifests Created
--------------------------------------------------------------------------------
 We created two main manifests as required:
 
 A. deployment.yaml
@@ -106,29 +88,27 @@ B. service.yaml
    - Port 80 → 8000 mapping
 
 3.3 Deployment Process
--------------------------------------------------------------------------------
-# Create namespace
+- Create namespace
 kubectl create namespace task-management
 
-# Load image into kind cluster
+- Load image into kind cluster
 kind load docker-image task-api:prod --name kind
 
-# Apply manifests
+- Apply manifests
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 
-# Wait for pods
+- Wait for pods
 kubectl wait --for=condition=ready pods -l app=task-api -n task-management
 
-# Verify deployment
+- Verify deployment
 kubectl get pods -n task-management
 
-# Access the service
+- Access the service
 kubectl port-forward -n task-management service/task-api-service 8080:80 &
 curl http://localhost:8080/health
 
 3.4 Challenges Faced & Solutions
--------------------------------------------------------------------------------
 Challenge and Solutions
 
 1. ImagePullBackOff error - Used kind load docker-image to load local image 
@@ -137,15 +117,12 @@ Challenge and Solutions
 
 
 4. CI/CD PIPELINE (STEP 3)
-===============================================================================
 
 4.1 Pipeline Design Decisions
--------------------------------------------------------------------------------
 Since we couldn't expose our local cluster to the internet, we implemented a
 DEMO deployment that shows the actual commands without requiring a live cluster.
 
 4.2 GitHub Actions Workflow
--------------------------------------------------------------------------------
 Location: .github/workflows/ci-cd.yml
 
 The pipeline has three jobs:
@@ -176,16 +153,14 @@ JOB 3: DEPLOY (DEMO MODE)
 - Purpose: Demonstrates deployment knowledge
 
 4.3 Pipeline Execution
--------------------------------------------------------------------------------
 When you push to main:
-1. ✓ Tests run automatically
-2. ✓ Docker image built and pushed to GHCR
-3. ✓ Deployment demo shows what would happen
+1.  Tests run automatically
+2.  Docker image built and pushed to GHCR
+3.  Deployment demo shows what would happen
 
 View pipeline: https://github.com/G4GANCHAUDHARY/task-management-svc/actions
 
 4.4 Why Demo Mode?
--------------------------------------------------------------------------------
 We chose demo deployment because:
 - GitHub Actions runners cannot access local kind cluster (127.0.0.1)
 - Self-hosted runner would require keeping machine online
@@ -195,20 +170,16 @@ We chose demo deployment because:
 
 
 6. HOW TO TEST OUR SOLUTION
-===============================================================================
 
 6.1 Prerequisites
--------------------------------------------------------------------------------
 - Docker Desktop (with Kubernetes enabled)
 - kubectl
 - kind
 - Python 3.11+
 
 6.2 Step-by-Step Testing
--------------------------------------------------------------------------------
 
 Step A: Test Docker Image
--------------------------
 git clone https://github.com/G4GANCHAUDHARY/task-management-svc
 cd task-management-svc
 docker build -t task-api:test .
@@ -217,29 +188,27 @@ curl http://localhost:8000/health
 docker stop test-api && docker rm test-api
 
 Step B: Test Kubernetes Deployment (Local)
------------------------------------------
-# Start kind cluster
+- Start kind cluster
 kind create cluster --name test-cluster
 
-# Load image
+- Load image
 kind load docker-image task-api:prod --name test-cluster
 
-# Deploy
+- Deploy
 kubectl create namespace task-management
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 
-# Verify
+- Verify
 kubectl get pods -n task-management
 kubectl port-forward -n task-management service/task-api-service 8080:80 &
 curl http://localhost:8080/health
 
-# Clean up
+- Clean up
 kubectl delete namespace task-management
 kind delete cluster --name test-cluster
 
 Step C: Test CI/CD Pipeline
---------------------------
 1. Go to GitHub repository
 2. Click on Actions tab
 3. See latest workflow run
