@@ -10,7 +10,7 @@ on:
 # Environment variables
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ghcr.io/g4ganchaudhary/task-management-svc
   K8S_NAMESPACE: task-management
   DEPLOYMENT_NAME: task-api
 
